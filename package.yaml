@@ -24,6 +24,8 @@ dependencies:
 - cassava
 - bytestring
 - vector
+- MonadRandom
+- random
 
 library:
   source-dirs: src
