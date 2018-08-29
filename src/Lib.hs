@@ -1,15 +1,23 @@
 {-#LANGUAGE OverloadedStrings#-}
+{-#LANGUAGE ScopedTypeVariables#-}
 
 module Lib
     ( someFunc
     ) where
 
 import Control.Applicative
+import qualified Data.ByteString.Lazy as BL
 import Data.Csv
+import qualified Data.Vector as V
 
 
 someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+someFunc = do
+    csvData <- BL.readFile "credit.csv"
+    case decodeByName csvData of
+        Left err -> putStrLn err
+        Right (_, v) -> V.forM_ v $ \ p ->
+            putStrLn $ show $ target p
 
 data CreditScore = CreditScore {
     target :: !Bool
@@ -17,6 +25,6 @@ data CreditScore = CreditScore {
 
 instance FromNamedRecord CreditScore where
     parseNamedRecord r =  do
-           classTag <-  r .: "class"
+           classTag :: String <-  r .: "class"
            pure $ CreditScore $ classTag == "good"
 
